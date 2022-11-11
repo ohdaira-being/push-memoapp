@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vue.js App</title>
+
+    <link rel="stylesheet" href="MemoList.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="../vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="app1">
+      <h1>新規メモ</h1>
+
+      <!-- 新規メモの追加画面を開く画面 -->
+      <form class="addmemo-form" v-if="!addmemoform">
+        <button type="button" v-on:click="doaddmemo()">
+          新規メモを追加する
+        </button>
+      </form>
+
+      <!-- 新規メモの追加画面 -->
+      <form class="add-form" v-else="!addmemoform" v-on:submit.prevent="doadd">
+        <label>見出し：</label><input type="text" v-model="newhead" /><br />
+        <label>内容：</label>
+        <textarea
+          id="edit-memo"
+          name="memo"
+          cols="40"
+          rows="8"
+          v-model="newcomment"
+        ></textarea
+        ><br />
+        <button type="submit">追加</button>
+        <button type="button" v-on:click="doaddmemoclear()">クリア</button>
+        <button type="button" v-on:click="doaddmemo()">閉じる</button>
+      </form>
+      </div>
+
+      <!-- メモ一覧画面 -->
+      <div id="app2">
+      <h1>メモ一覧</h1>
+      <p>削除は、[Ctrl]キーを押しながら、クリックしてください。</p>
+      <div v-for="item in memos" v-bind:key="item.head">
+        <form class="list-form">
+          <ul>
+            <li class="memo">
+              <dl>
+                <dt>
+                  <button 
+                    type="button"
+                    v-show="!item.memo"
+                    v-on:click="dodenotetrue(item)"
+                  ><label>{{ item.head }}</label>
+                  </button>
+                  <label class="top" v-show="item.memo">{{ item.head }}</label><br>
+                </dt>
+                <dd>
+                  <label class="sub">{{ item.commenthead }}</label>
+                </dd>
+              </dl>
+            </li>
+          </ul>
+        </form>
+
+        <!-- メモの詳細画面 -->
+        <div class="detail">
+          <!-- 表示画面 -->
+          <form class="view-form" v-show="item.denote">
+            <!-- メモ内容の表示 -->
+            <textarea cols="40" rows="8" readonly v-model="item.comment">
+            </textarea
+            ><br />
+            <button
+              type="button"
+              v-show="!item.edit && !editonly"
+              v-on:click="doeditscreen(item)"
+            >
+              編集
+            </button>
+            <button
+              type="button"
+              v-show="item.edit"
+              v-on:click="stopeditscreen(item)"
+            >
+              編集を閉じる
+            </button>
+            <button type="button" v-on:click.ctrl="doremove(item)">削除</button>
+            <button
+              type="button"
+              v-show="item.denotestop"
+              v-on:click="dodenotefalse(item)"
+            >
+              閉じる
+            </button>
+          </form>
+
+          <!-- 編集画面 -->
+          <form class="edit-form" v-show="item.edit">
+            <!-- 見出しの初期画面 -->
+            <div class="isedit">
+              <button
+                type="button"
+                v-show="!item.edithead"
+                v-on:click="doedithead(item)"
+              >
+                見出しの編集
+              </button>
+              <button
+                type="button"
+                v-show="item.edithead"
+                v-on:click="doedithead(item)"
+              >
+                見出しの編集を閉じる
+              </button>
+            </div>
+            <!-- 見出し編集画面 -->
+            <div class="edit" v-show="item.edithead">
+              <label
+                >見出し：</label>
+                <input type="text" v-model="editedhead" /><br />
+              <button type="button" v-on:click="savehead(item)">
+                見出しの編集を保存
+              </button>
+              <button type="button" v-on:click="doclearedithead()">
+                クリア
+              </button>
+            </div>
+
+            <!-- 内容の初期画面 -->
+            <div class="isedit">
+            <button
+              type="button"
+              v-show="!item.editcomment"
+              v-on:click="doeditcomment(item)"
+            >
+              内容の編集
+            </button>
+            <button
+              type="button"
+              v-show="item.editcomment"
+              v-on:click="doeditcomment(item)"
+            >
+              内容の編集を閉じる
+            </button>
+            </div>
+
+            <!-- 内容の編集画面 -->
+            <div class="edit" v-show="item.editcomment">
+              <label>内容：</label>
+              <textarea
+                name="memo"
+                cols="40"
+                rows="8"
+                v-model="editedcomment"
+              >
+              </textarea
+              ><br />
+              <button type="button" v-on:click="savecomment(item)">
+                内容の編集を保存
+              </button>
+              <button type="button" v-on:click="docleareditcomment()">
+                クリア
+              </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <p>
+      <a href="https://jp.vuejs.org/v2/cookbook/client-side-storage.html"
+        >ローカルストレージについて</a
+      >
+    </p>
+    <p>
+      <a href="https://itsakura.com/js-textarea"
+        >テキストエリアの値を取得する</a
+      >
+    </p>
+
+    <script src="MemoList.js"></script>
+  </body>
+</html>
